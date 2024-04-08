@@ -76,8 +76,8 @@ Now let's move on to Service Discovery. In this chapter, you will simulate two r
    - runs consul service
 - install_consul_client, which:
    - works with api and db;
-   - copies consul_server.hcl;
-   - installs consul, envy all necessary dependencies for consul; 
+   - copies consul_client.hcl;
+   - installs consul, envoy all necessary dependencies for consul; 
    - runs consul and consul-envoy services;
 - install_db, which:
    - works with db;
@@ -95,7 +95,7 @@ Now let's move on to Service Discovery. In this chapter, you will simulate two r
       - POSTGRES_PASSWORD="<user password>"
    - runs the built jar file with the command: `java -jar <path to hotel-service>/hotel-service/target/<jar file name>.jar`
 
-4) Run the prepared tests through postman on the host and make sure that they are all successful. Show the test results in the report.
+4) Check the functionality of CRUD operations on hotel service. Show the test results in the report.
 
 5) Place the files created in this part in the `src\ansible02` and `src\consul01` folders in your personal repository.
 
