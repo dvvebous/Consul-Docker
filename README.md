@@ -44,7 +44,7 @@ In this chapter you will perform a remote node configuration to deploy a multise
  - the application role performs the deployment of a microservice application using docker-compose,
  - apache installs and runs the standard apache server
  - postgres installs and runs postgres, creates a database with an arbitrary table and adds three arbitrary records to it. 
- - Assign the first role to node01 and the second two roles to node02, check the functionality of the microservices application with postman tests, make sure that postgres and the apache server are available. 
+ - Assign the first role to node01 and the second two roles to node02, check the functionality of the microservices application with postman tests, make sure that postgres and the apache server are available. For Apache, a web page should open in the browser. As for PostgreSQL, you need to connect from the local machine and display the contents of the previously created table with data.
 
 6) Place the files created in this part in the `src\ansible01` folder in your personal repository.
 
@@ -66,7 +66,6 @@ Now let's move on to Service Discovery. In this chapter, you will simulate two r
 2) Create three machines using Vagrant - consul_server, api и db. 
 - Forward port 8082 from the api to the local machine to access the still undeployed api
 - Forward port 8500 with the manager to access the ui consul. 
-- Move the pre-built jar file from the source code in `src/services/hotels_service` folder and the prepared configurations for consul to consul_server.
 
 3) Write a playbook for ansible and four roles: 
 - install_consul_server, which:
