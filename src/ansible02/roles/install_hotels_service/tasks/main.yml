@@ -1,0 +1,36 @@
+---
+- name: Install jdk
+  apt:
+    name: openjdk-8-jdk
+    state: latest
+    update_cache: yes
+
+- name: Copy source code
+  copy:
+    src: ../hotel-service
+    dest: ./
+
+- name: Set PostgreSQL environment variables for a specific user
+  lineinfile:
+    path: "/etc/environment"
+    line: "{{ item }}"
+    state: present
+    create: yes
+  loop:
+    - 'export POSTGRES_HOST="192.168.56.14"'
+    - 'export POSTGRES_PORT="5432"'
+    - 'export POSTGRES_DB="hotels_db"'
+    - 'export POSTGRES_USER="postgres"'
+    - 'export POSTGRES_PASSWORD="postgres"'
+
+
+- name: Copy unit service hotel-services
+  copy:
+    src: ../consul01/hotel-service.service
+    dest: /etc/systemd/system/hotel-service.service
+
+- name: Run unit service with hotel-service
+  service:
+    name: hotel-service
+    state: reloaded 
+    enabled: yes

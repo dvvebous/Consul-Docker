@@ -1,0 +1,8 @@
+[db]
+database ansible_host=192.168.56.14 ansible_user=vagrant ansible_user=vagrant
+
+[api]
+hotel_service ansible_host=192.168.56.13 ansible_user=vagrant
+
+[consul_server]
+consul ansible_host=192.168.56.12 ansible_user=vagrant ansible_user=vagrant

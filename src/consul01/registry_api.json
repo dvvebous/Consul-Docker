@@ -1,0 +1,22 @@
+{
+"service":{
+        "name": "api",
+        "tags": ["hotel-service"],
+        "port": 8082,
+        "check": {
+          "args": [ "curl", "192.168.56.13:8082" ],
+          "interval": "10s",
+          "timeout": "1s"
+        },
+        "connect": {
+          "sidecar_service": {
+          "proxy": {
+            "upstreams": [{
+              "destination_name": "db",
+              "local_bind_port": 5432
+             }]
+                }
+            }
+        }
+    }
+}

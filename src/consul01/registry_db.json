@@ -1,0 +1,16 @@
+
+
+{
+"service": 
+    {
+      "name": "db",
+      "tags": ["master"],
+      "port": 5432,
+      "check": {
+        "args": ["/usr/bin/pg_isready", "-h", "192.168.56.14", "-p", "5432"],
+        "interval": "10s",
+        "timeout": "1s"
+      },
+      "connect": { "sidecar_service": {} }
+    }
+}

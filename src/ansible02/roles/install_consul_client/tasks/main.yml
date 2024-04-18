@@ -1,0 +1,62 @@
+---
+- name: Copy binary consul
+  copy:
+    src: ../consul01/consul
+    dest: /usr/bin/consul
+    mode: 01777
+- name: Set PATH
+  shell:
+    cmd: |
+      echo $PATH:/usr/bin/consul > /etc/environment
+
+- name: Create user for consul
+  user:
+    name: consul
+    comment: User for consul
+    system: true
+
+- name: Create directory for consul
+  shell:
+    cmd: |
+      mkdir -p /var/lib/consul /etc/consul.d
+      chown consul:consul /var/lib/consul /etc/consul.d
+      chmod 775 /var/lib/consul /etc/consul.d
+
+- name: Copy script for config concul client
+  copy:
+    src: ./createConfigClient.sh
+    dest: ./
+
+- name: Create config concul client
+  shell:
+    cmd: |
+      bash ./createConfigClient.sh
+
+- name: Copy unit service Consul
+  copy:
+    src: ../consul01/consul.service
+    dest: /etc/systemd/system/consul.service
+
+- name: Copy unit service for proxy services
+  copy:
+    src: ../consul01/connect@.service
+    dest: /etc/systemd/system/connect@.service
+
+- name: Copy registry file to consul.d
+  copy: 
+    src: '{{ registry_service_file }}'
+    dest: /etc/consul.d/
+
+- name: Run unit service Consul
+  service:
+    name: consul
+    state: started
+    enabled: yes
+
+- name: Run unit service proxy consul
+  service:
+    name: connect@'{{ hostname_machine }}'
+    state: started
+    enabled: yes
+
+

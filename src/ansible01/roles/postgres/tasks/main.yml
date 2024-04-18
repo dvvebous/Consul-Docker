@@ -1,0 +1,61 @@
+---
+
+- name: Install postgres and psycopg2
+  community.general.apk:
+    name: postgresql, py3-psycopg2
+    state: latest
+    update_cache: yes
+
+
+- name: Check have /var/lib/postgresql/data/PG_VERSION
+  stat:
+    path: /var/lib/postgresql/data/PG_VERSION
+  register: pg_data_dir
+
+- name: Create /run/postgresql and change owner postgres directory
+  shell: 
+    cmd: |
+      mkdir /run/postgresql
+      chown postgres:postgres /run/postgresql/
+      chown postgres:postgres /var/lib/postgresql
+      chmod 0777 /var/lib/postgresql
+
+- name: Init database cluster
+  shell:
+    cmd: initdb -D /var/lib/postgresql/data
+  become: no
+  become_user: postgres
+  when: not pg_data_dir.stat.exists
+
+- name: Check if port 5432 is listening
+  wait_for:
+    port: 5432
+    delay: 5
+    timeout: 10
+    msg: "Timeout waiting for 5432 to respond"
+  register: port_check
+  ignore_errors: yes
+
+- name: start postgresql server
+  service:
+    name: postgresql
+    state: started
+    enabled: yes
+
+- name: Create database
+  ansible.builtin.postgresql_db:
+    name: my_database
+    state: present
+    login_user: postgres
+
+- name: Create table users
+  shell:
+    cmd: psql -U postgres -d my_database -c "DROP table IF EXISTS users; CREATE TABLE users (id SERIAL PRIMARY KEY, name VARCHAR(100), email VARCHAR(100));"
+
+- name: Insert rows into table users
+  shell:
+    cmd: |
+      psql -U postgres -d my_database -c "INSERT INTO users (name, email) VALUES ('John Doe', 'john.doe@example.com');"
+      psql -U postgres -d my_database -c "INSERT INTO users (name, email) VALUES ('Jane Doe', 'jane.doe@example.com');"
+      psql -U postgres -d my_database -c "INSERT INTO users (name, email) VALUES ('Don Don', 'Don.Don@example.com');"
+

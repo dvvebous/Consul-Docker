@@ -1,0 +1,39 @@
+---
+
+- name: Install postgres
+  package:
+    name: postgresql, postgresql-contrib, python3-pip, python3-dev, libpq-dev
+    state: latest
+    update_cache: yes
+
+- name: Install psycopg2
+  shell:
+    cmd:
+      pip3 install psycopg2
+
+- name: Change password
+  shell:
+    cmd: |
+      sudo -u postgres psql -c "ALTER USER postgres PASSWORD 'postgres';"
+  become: no
+
+- name: Execute SQL script
+  community.postgresql.postgresql_db:
+    name: hotels_db
+    login_password: postgres
+    login_host: localhost
+  become: no
+  become_user: postgres
+
+- name: Set config postgres
+  shell:
+    cmd: |
+      sed -i 's|^host    all             all             127.0.0.1/32            md5|host    all             all             0.0.0.0/0           md5|' /etc/postgresql/12/main/pg_hba.conf
+      sed -i "s|^#listen_addresses = 'localhost'|listen_addresses = '*'|" /etc/postgresql/12/main/postgresql.conf
+  args:
+    executable: /bin/bash
+
+- name: Restart PostgreSQL service
+  systemd:
+    name: postgresql
+    state: restarted

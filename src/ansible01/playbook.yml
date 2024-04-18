@@ -1,0 +1,40 @@
+---
+#First playbook
+- name: Install Docker-componets and copy microservices  
+  hosts: applicaion
+  become: yes
+
+  vars:
+    docker_compose_path: /home/vagrant/docker-compose.yml
+    services_path: /home/vagrant/services
+    
+  tasks:
+    - name: Install docker and docker-compose
+      community.general.apk:
+        name: docker, docker-compose
+        state: latest
+        update_cache: yes
+
+    - name: Copy docker-compose file
+      copy:
+        src: "{{ docker_compose_path }}"
+        dest: /home/vagrant/docker-compose.yml
+
+    - name: Copy services directory
+      copy:
+        src: "{{ services_path }}"
+        dest: /home/vagrant/
+
+    - name: Docker services start
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Docker-compose run
+      shell:
+        cmd: docker-compose up -d
+    
+
+    
+       

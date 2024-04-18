@@ -1,0 +1,44 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+$installPython = <<SCRIPT
+apk update & apk add python3
+SCRIPT
+Vagrant.configure("2") do |config|
+  
+  config.vm.define "manager" do |manager|
+    manager.vm.hostname = "manager"
+    manager.vm.box = "generic/alpine318"
+    manager.vm.synced_folder ".", "/vagrant"
+    manager.vm.network "private_network", ip: "192.168.56.10"
+    manager.vm.network "forwarded_port", guest: 22, host: 2290, auto_correct: true
+    manager.vm.provision "shell", inline: $installPython
+    manager.vm.provider "virtualbox" do |vb|
+      vb.memory = "1000"
+    end
+  end
+
+  config.vm.define "node01" do |node01|
+    node01.vm.hostname = "node01"
+    node01.vm.box = "generic/alpine318"
+    node01.vm.network "private_network", ip: "192.168.56.11"
+    node01.vm.network "forwarded_port", guest: 22, host: 2291
+    node01.vm.network "forwarded_port", guest: 8087, host: 8087, auto_correct: true
+    node01.vm.network "forwarded_port", guest: 8081, host: 8081, auto_correct: true
+    node01.vm.provision "shell", inline: $installPython
+    node01.vm.provider "virtualbox" do |vb|
+     vb.memory = "4000"
+    end
+  end
+
+  config.vm.define "node02" do |node02|
+    node02.vm.hostname = "node02"
+    node02.vm.box = "generic/alpine318"
+    node02.vm.network "private_network", ip: "192.168.56.12"
+    node02.vm.network "forwarded_port", guest: 80, host: 8080, auto_correct: true
+    node02.vm.network "forwarded_port", guest: 22, host: 2292, auto_correct: true
+    node02.vm.provision "shell", inline: $installPython
+    node02.vm.provider "virtualbox" do |vb|
+      vb.memory = "1000"
+    end
+  end
+end

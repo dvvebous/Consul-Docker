@@ -1,0 +1,63 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+$changeConfigSshd = <<SCRIPT
+sed -i 's/^PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
+systemctl restart sshd
+SCRIPT
+$installAnsible = <<SCRIPT
+apt-get update && apt-get install ansible -y
+ansible-galaxy collection install community.postgresql
+SCRIPT
+$installPython = <<SCRIPT
+apt-get update && apt-get install python3 -y
+SCRIPT
+
+Vagrant.configure("2") do |config|
+
+    config.vm.define "manager" do |manager|
+        manager.vm.hostname = "manager"
+        manager.vm.box = "ubuntu/focal64"
+        manager.vm.provision "shell", inline: $changeConfigSshd
+        manager.vm.provision "shell", inline: $installAnsible
+        manager.vm.network "private_network", ip: "192.168.56.11"
+        manager.vm.network "forwarded_port", host: 2290, guest: 22
+        manager.vm.provider "virtualbox" do |vb|
+            vb.memory = "1000"
+          end
+    end
+
+    config.vm.define "consulServer" do |consulServer|
+        consulServer.vm.hostname = "consulServer"
+        consulServer.vm.box = "ubuntu/focal64"
+        consulServer.vm.provision "shell", inline: $changeConfigSshd
+        consulServer.vm.network "private_network", ip: "192.168.56.12"
+        consulServer.vm.network "forwarded_port", host: 8500, guest: 8500
+        consulServer.vm.provider "virtualbox" do |vb|
+            vb.memory = "2000"
+          end
+    end
+
+    config.vm.define "api" do |api|
+        api.vm.hostname = "api"
+        api.vm.box = "ubuntu/focal64"
+        api.vm.provision "shell", inline: $changeConfigSshd
+        api.vm.network "private_network", ip: "192.168.56.13"
+        api.vm.network "forwarded_port", host: 8082, guest: 8082
+        api.vm.provider "virtualbox" do |vb|
+            vb.memory = "1500"
+          end
+    end
+
+
+    config.vm.define "db" do |db|
+        db.vm.hostname = "db"
+        db.vm.box = "ubuntu/focal64"
+        db.vm.provision "shell", inline: $changeConfigSshd
+        db.vm.network "private_network", ip: "192.168.56.14"
+        db.vm.provider "virtualbox" do |vb|
+            vb.memory = "1500"
+          end
+    end
+end
+
+

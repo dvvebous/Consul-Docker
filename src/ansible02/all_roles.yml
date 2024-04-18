@@ -1,0 +1,28 @@
+---
+#playbook with roles
+- name: Starting consul
+  hosts: consul_server
+  become: yes
+  roles:
+    - install_consul_server
+
+- name: Starting database
+  hosts: db
+  become: yes
+  roles:
+    - install_db
+    - role: install_consul_client
+      vars:
+        hostname_machine: db
+        registry_service_file: "../consul01/registry_db.json"
+
+- name: Starting api
+  hosts: api
+  become: yes
+  roles:
+    - role: install_consul_client 
+      vars:
+        hostname_machine: api
+        registry_service_file: "../consul01/registry_api.json"
+    - install_hotels_service
+       

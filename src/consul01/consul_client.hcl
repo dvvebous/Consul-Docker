@@ -1,0 +1,10 @@
+server = false
+datacenter = "server1",
+node_name = "agent01"
+data_dir = "/var/lib/consul"
+advertise_addr = "192.168.56.14"
+client_addr = "127.0.0.1"
+retry_join = ["192.168.56.12"]
+encrypt = "2hYmtlHwoVKpOHAlHD9HnNXlbSzKaqKu2ScCEcpkr0Y="
+log_level = "warn"
+enable_syslog = true

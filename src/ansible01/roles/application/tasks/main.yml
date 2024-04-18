@@ -1,0 +1,32 @@
+---
+- name: Install docker and docker-compose
+  community.general.apk:
+    name: docker, docker-compose
+    state: latest
+    update_cache: yes
+
+- name: Copy docker-compose file
+  copy:
+    src: "{{ docker_compose_path }}"
+    dest: /home/vagrant/docker-compose.yml
+
+- name: Check have services directory
+  stat:
+    path: /home/vagrant/services
+  register: services_data_dir
+
+- name: Copy services directory
+  copy:
+    src: "{{ services_path }}"
+    dest: /home/vagrant/
+  when: not services_data_dir.stat.exists
+
+- name: Docker services start
+  service:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: Docker-compose run
+  shell:
+    cmd: docker-compose up -d

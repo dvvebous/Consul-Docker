@@ -1,0 +1,53 @@
+---
+- name: Copy binary consul
+  copy:
+    src: ../consul01/consul
+    dest: /usr/bin/consul
+    mode: 01777
+
+- name: Install postgresql-client
+  apt:
+    name: postgresql-client-12
+    state: latest
+    update_cache: yes
+
+- name: Set PATH
+  shell:
+    cmd: |
+      echo $PATH:/usr/bin/consul > /etc/environment
+
+- name: Create user for consul
+  user:
+    name: consul
+    comment: User for consul
+    system: true
+
+- name: Create directory for consul
+  shell:
+    cmd: |
+      mkdir -p /var/lib/consul /etc/consul.d
+      chown consul:consul /var/lib/consul /etc/consul.d
+      chmod 775 /var/lib/consul /etc/consul.d
+
+- name: Copy config concul server
+  copy:
+    src: ../consul01/consul_server.hcl 
+    dest: /etc/consul.d/consul_server.hcl
+
+- name: Copy unit service Consul
+  copy:
+    src: ../consul01/consul.service
+    dest: /etc/systemd/system/consul.service
+
+- name: Run unit service Consul
+  service:
+    name: consul
+    state: reloaded 
+    enabled: yes
+
+- name: Create intention
+  shell:
+    cmd: |
+      sleep 30
+      consul intention create -replace api db
+

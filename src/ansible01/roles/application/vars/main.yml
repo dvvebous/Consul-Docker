@@ -1,0 +1,4 @@
+---
+
+docker_compose_path: /home/vagrant/docker-compose.yml
+services_path: /home/vagrant/services

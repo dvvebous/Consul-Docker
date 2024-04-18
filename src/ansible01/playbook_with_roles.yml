@@ -1,0 +1,18 @@
+---
+#playbook with roles
+- name: Deploy application
+  hosts: node01
+  become: yes
+  roles:
+    # - application
+
+
+- name: Deploy postgres and Apache server
+  hosts: node02
+  become: yes
+  roles:
+    - apache
+    - postgres
+
+    
+       

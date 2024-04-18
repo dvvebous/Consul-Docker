@@ -1,0 +1,18 @@
+[Unit]
+Description=Hotel Service
+After=network.target
+
+[Service]
+User=vagrant
+ExecStart=/usr/bin/java -jar /home/vagrant/hotel-service/target/hotel-service-0.0.1-SNAPSHOT.jar
+SuccessExitStatus=143
+Environment="POSTGRES_HOST=127.0.0.1"
+Environment="POSTGRES_PORT=5432"
+Environment="POSTGRES_DB=hotels_db"
+Environment="POSTGRES_USER=postgres"
+Environment="POSTGRES_PASSWORD=postgres"
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
