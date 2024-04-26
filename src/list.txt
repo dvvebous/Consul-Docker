@@ -1,2 +1,0 @@
-1.Сделать ansible task для разворачивания postgresql на интерфейсе внутрянки
-https://blog.devart.com/configure-postgresql-to-allow-remote-connection.html
